@@ -67,5 +67,20 @@ public class ContactsPlugin: CAPPlugin {
         }
     }
 
+    @objc func addContact(_ call: CAPPluginCall) {
+        var contactsArray : [PluginResultData] = [];
+        Permissions.contactPermission { granted in
+            if granted {
+                do {
+                    call.success("YAS QUEEN")
+                } catch let error as NSError {
+                    call.error("Generic Error", error)
+                }
+            } else {
+                call.error("User denied access to contacts")
+            }
+        }
+    }
+
 }
 

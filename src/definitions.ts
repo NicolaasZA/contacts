@@ -20,4 +20,5 @@ export interface Contact {
 export interface ContactsPlugin {
   getPermissions(): Promise<PermissionStatus>;
   getContacts(): Promise<{ contacts: Contact[] }>;
+  addContact(): Promise<string>;
 }
