@@ -144,8 +144,8 @@ Contacts.addContact(contact).then(result => {
 });
 ```
 
-### viewContact - _(iOS supported)_
-Launches a native view of the contact. __iOS__ uses _CNContactViewController_.
+### viewContact - _(not yet supported, but soon)_
+Launches a native view of the contact.
 ```typescript
 Contacts.viewContact(contactId).then(result => {
     if (result.success) {
