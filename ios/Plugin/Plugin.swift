@@ -8,6 +8,7 @@
 import Foundation
 import Capacitor
 import Contacts
+import ContactsUI
 
 @objc(ContactsPlugin)
 public class ContactsPlugin: CAPPlugin {
@@ -132,7 +133,33 @@ public class ContactsPlugin: CAPPlugin {
     }
     
     @objc func viewContact(_ call: CAPPluginCall) {
-        call.error("Not implemented")
+        Permissions.contactPermission { granted in
+            if granted {
+                do {
+                    // Get data from JS
+                    let contactId = call.getString("contactId")
+                    
+                    if (contactId != nil) {
+                        let store = CNContactStore()
+                        let descriptor = CNContactViewController.descriptorForRequiredKeys()
+                        let contact = try store.unifiedContact(withIdentifier: contactId!, keysToFetch: [descriptor])
+                        let vc = CNContactViewController(for: contact)
+                        call.success([
+                            "action": "view",
+                            "success": true
+                        ])
+                    }
+                } catch let error as NSError {
+                    call.success([
+                        "action": "view",
+                        "success": false
+                    ])
+                }
+            } else {
+                call.error("User denied access to contacts")
+            }
+        }
+//        call.error("Not implemented")
     }
 
 }
