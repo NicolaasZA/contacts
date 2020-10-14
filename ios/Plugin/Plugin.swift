@@ -51,7 +51,7 @@ public class ContactsPlugin: CAPPlugin {
                             "contactId": contact.identifier,
                             "firstName": contact.givenName,
                             "lastName": contact.familyName,
-                            "organization": contact.organizationName,
+                            "organizationName": contact.organizationName,
                             "phoneNumbers": phoneNumbers,
                             "emails": emails
                         ]
