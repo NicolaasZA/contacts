@@ -7,7 +7,7 @@
 
 import Foundation
 import Capacitor
-
+import Contacts
 
 @objc(ContactsPlugin)
 public class ContactsPlugin: CAPPlugin {
@@ -49,7 +49,9 @@ public class ContactsPlugin: CAPPlugin {
                         }
                         let contactResult: PluginResultData = [
                             "contactId": contact.identifier,
-                            "displayName": "\(contact.givenName) \(contact.familyName)",
+                            "firstName": contact.givenName,
+                            "lastName": contact.familyName,
+                            "organization": contact.organizationName,
                             "phoneNumbers": phoneNumbers,
                             "emails": emails
                         ]
@@ -68,11 +70,58 @@ public class ContactsPlugin: CAPPlugin {
     }
 
     @objc func addContact(_ call: CAPPluginCall) {
-        var contactsArray : [PluginResultData] = [];
         Permissions.contactPermission { granted in
             if granted {
                 do {
-                    call.success("YAS QUEEN")
+                    // Get data from JS
+                    let contactId = call.getString("contactId")
+                    let firstName = call.getString("firstName")
+                    let familyName = call.getString("familyName")
+                    let organizationName = call.getString("organizationName")
+                    let phoneNumbers = call.getArray("phoneNumbers", String.self)
+                    let emailAddrs = call.getArray("emails", String.self)
+                    
+                    if (contactId != nil) {
+                        
+                        // Look for matching contact. If found, set isExisting to true.
+                        var isExisting = false
+                        
+                        let contacts = try Contacts.getContactFromCNContact()
+                        for contact in contacts {
+                            
+                            if (contact.identifier == contactId && !isExisting) {
+                                // Found a matching contact, so update
+                                isExisting = true
+                                
+                                var modifiedContact = contact.mutableCopy() as! CNMutableContact
+                                if (firstName != nil) {modifiedContact.givenName = firstName!}
+                                if (familyName != nil) {modifiedContact.familyName = familyName!}
+                                if (organizationName != nil) {modifiedContact.organizationName = organizationName!}
+                                
+                                modifiedContact = Contacts.copyAddrAndNum(modifiedContact, phoneNumbers!, emailAddrs!)
+                                
+                                let result = Contacts.updateContact(contact.identifier, contact: modifiedContact)
+                                call.success([
+                                    "action": "modified",
+                                    "success": result
+                                ])
+                                return;
+                            }
+                        }
+                        
+                        if (!isExisting) {
+                            // No match was found, this is a new contact.
+                            let newContact = Contacts.createContactObject(firstName!, familyName!, organizationName!, phoneNumbers!, emailAddrs!)
+                            let result = Contacts.addContact(newContact)
+                            call.success([
+                                "action": "added",
+                                "success": result
+                            ])
+                        }
+                        
+                    } else {
+                        call.reject("No contact object supplied")
+                    }
                 } catch let error as NSError {
                     call.error("Generic Error", error)
                 }
@@ -80,6 +129,10 @@ public class ContactsPlugin: CAPPlugin {
                 call.error("User denied access to contacts")
             }
         }
+    }
+    
+    @objc func viewContact(_ call: CAPPluginCall) {
+        call.error("Not implemented")
     }
 
 }
