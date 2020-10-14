@@ -111,45 +111,79 @@ import ch.byrds.capacitor.contacts.Contacts;
 
 **NOTE**: On Android you have to ask for permission first, before you can fetch the contacts. Use the `getPermissions()` method before you try to fetch contacts using `getContacts()`.
 
+---
 ## Usage / Examples
 
-You have the following Methods available:
-
-```
-export interface ContactsPlugin {
-  getPermissions(): Promise<PermissionStatus>;
-  getContacts(): Promise<{contacts: Contact[]}>;
-}
-```
-
-If you're considering to use this plugin you most likely want to retrive contacts a users contacts:
-
 Import the Plugin in your TS file:
-
 ```
 import { Plugins } from "@capacitor/core";
 const  { Contacts } = Plugins;
 ```
 
-Next use it and console log the result:
-
+You have the following functions available:
+```typescript
+export interface ContactsPlugin {
+  getPermissions(): Promise<PermissionStatus>;
+  getContacts(): Promise<{ contacts: Contact[] }>;
+  addContact(contact: any): Promise<{ action: string, success: boolean }>;
+  viewContact(contactId: any): Promise<{ action: string, success: boolean }>;
+}
 ```
+
+### getContacts
+
+Get all contacts:
+```typescript
 Contacts.getContacts().then(result => {
     console.log(result);
     for (const contact of result.contacts) {
         console.log(contact);
     }
 });
-
 ```
 
-That's it. Do Whatever you want with the retrived contacts.
+### addContact
 
-If you're trying to build something like "contacts matching" based on phone numbers i recommend using google libphonenumber: https://www.npmjs.com/package/google-libphonenumber
+Add a new contact with given data, or modify existing (matched with contactId)
+```typescript
+// contact.contactId is already set on a contact received from getContacts().
+// Set as empty to create a new contact.
+const contact = {
+  contactId: '', 
+  firstName: 'John',
+  familyName?: 'Doe',
+  phoneNumbers: [ '1231231234' ],
+  emails: [ 'example@domain.com' ],
+  organizationName: 'Some Company'
+};
 
-In order to match them properly you need to format them before you can match or store them properly.
+Contacts.addContact(contact).then(result => {
+    if (result.success) {
+      if (result.action == 'added') {
+        // New contact was made
+      } else {
+        // Existing contact (with same contactId) was updated
+      }
+    } else {
+      // Adding failed
+    }
+});
+```
 
-### Interfaces
+### viewContact
+Launches a native view of the contact. __iOS__ uses _CNContactViewController_.
+```typescript
+Contacts.viewContact(contactId).then(result => {
+    if (result.success) {
+      // No exceptions during native call
+    } else {
+      // Some error during viewing call
+    }
+});
+```
+
+---
+## Interfaces
 
 ```
 export interface PermissionStatus {
