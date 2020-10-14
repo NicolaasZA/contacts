@@ -26,40 +26,20 @@
 
 Maintenance Status: Actively Maintained
 
-## Demo
+## NOTE: THIS IS A HEAVILY MODIFIED FORK to allow for the viewing/adding/updating of contacts. 
 
-You can find a working Ionic App using the Byrds' Capacitor Contacts plugin here:
-https://github.com/byrdsandbytes/capContactsDemo/tree/capacitor-community
-
+---
 ## Prerequisites
+- Ionic Angular Project with Capacitor already intergrated.
+- NodeJS with Node Package Manager installed on the system.
 
-Setup your project with Capacitor. For details check here: https://capacitorjs.com
-
-```
-cd my-app
-npm install --save @capacitor/core @capacitor/cli
-```
-
-Initalize Capacitor
-
-```
-npx cap init
-```
-
-Add the platforms you want to use.
-
-```
-npx cap add android
-npx cap add ios
-npx cap add electron
-```
-
+---
 ## Installation
 
 Install:
 
 ```
-npm i --save @capacitor-community/contacts
+npm i --save git+https://github.com/NicolaasZA/contacts.git
 ```
 
 Sync:
@@ -72,29 +52,23 @@ npx cap sync
 
 For iOS you need to set a usage description in your info.plist file. (Privacy Setting)
 Open xCode search for your info.plist file and press the tiny "+". Add the following entry:
-
-```
-Privacy - Contacts Usage Description
-```
+>Privacy - Contacts Usage Description
 
 Give it a value like:
-
-```
-"We need access to your contacts in order to do something."
-```
+>We need access to your contacts in order to do something.
 
 ### Android Notes
 
 For Android you have to add the permisions in your AndroidManifest.xml. Add the following permissions before the closing of the "manifest" tag.
 
-```
+```xml
 <uses-permission android:name="android.permission.READ_CONTACTS" />
-<uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+<uses-permission android:name="android.permission.WRITE_CONTACTS" />
 ```
 
 Next import the capContacts class to your MainActivity
 
-```
+```java
 // Initializes the Bridge
     this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
       // Additional plugins you've installed go here
@@ -105,7 +79,7 @@ Next import the capContacts class to your MainActivity
 
 Make sure to import it properly as well.
 
-```
+```java
 import ch.byrds.capacitor.contacts.Contacts;
 ```
 
@@ -115,7 +89,7 @@ import ch.byrds.capacitor.contacts.Contacts;
 ## Usage / Examples
 
 Import the Plugin in your TS file:
-```
+```typescript
 import { Plugins } from "@capacitor/core";
 const  { Contacts } = Plugins;
 ```
@@ -130,7 +104,7 @@ export interface ContactsPlugin {
 }
 ```
 
-### getContacts
+### getContacts - _(iOS, Android supported)_
 
 Get all contacts:
 ```typescript
@@ -142,7 +116,7 @@ Contacts.getContacts().then(result => {
 });
 ```
 
-### addContact
+### addContact - _(iOS supported)_
 
 Add a new contact with given data, or modify existing (matched with contactId)
 ```typescript
@@ -170,7 +144,7 @@ Contacts.addContact(contact).then(result => {
 });
 ```
 
-### viewContact
+### viewContact - _(iOS supported)_
 Launches a native view of the contact. __iOS__ uses _CNContactViewController_.
 ```typescript
 Contacts.viewContact(contactId).then(result => {
@@ -185,19 +159,18 @@ Contacts.viewContact(contactId).then(result => {
 ---
 ## Interfaces
 
-```
+```typescript
 export interface PermissionStatus {
   granted: boolean;
 }
 
-export interface Contact {
+export interface Contact { 
   contactId: string;
-  displayName?: string;
+  firstName?: string;
+  familyName?: string;
   phoneNumbers: string[];
   emails: string[];
   organizationName?: string;
-  organizationRole?: string;
-  birthday?: string;
 }
 ```
 
@@ -227,6 +200,7 @@ MIT
     <td align="center"><a href="https://github.com/tafelnl"><img src="https://avatars2.githubusercontent.com/u/35837839?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tafel</b></sub></a><br /><a href="https://github.com/idrimi (Jonathan Gerber)/contacts/commits?author=tafelnl" title="Code">💻</a></td>
     <td align="center"><a href="http://ionicframework.com/"><img src="https://avatars3.githubusercontent.com/u/11214?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Max Lynch</b></sub></a><br /><a href="https://github.com/idrimi (Jonathan Gerber)/contacts/commits?author=mlynch" title="Documentation">📖</a> <a href="#eventOrganizing-mlynch" title="Event Organizing">📋</a></td>
     <td align="center"><a href="https://github.com/david-garzon-adl"><img src="https://avatars0.githubusercontent.com/u/45822796?v=4?s=100" width="100px;" alt=""/><br /><sub><b>David Javier Garzon Carrillo</b></sub></a><br /><a href="https://github.com/idrimi (Jonathan Gerber)/contacts/commits?author=david-garzon-adl" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/NicolaasZA"><img src="https://avatars0.githubusercontent.com/NicolaasZA?v=4?s=100" width="100px;" alt=""/><br /><sub><b>NicolaasZA (FORK)</b></sub></a><br /><a href="https://github.com/NicolaasZA/contacts/commits?author=NicolaasZA" title="Code">💻</a></td>
   </tr>
 </table>
 
